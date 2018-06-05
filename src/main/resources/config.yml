@@ -1,0 +1,13 @@
+# Plugin prefix
+Prefix: '&7[ &aOreoAnnouncer &7] &f➟ '
+
+# Settings
+Settings:
+  # in seconds
+  announcer-countdown: 10
+  # sound that will play when it announce something
+  sound: BLOCK_NOTE_PLING
+  # sound volume
+  sound-volume: 50
+  # sound pitch
+  sound-pitch: 10

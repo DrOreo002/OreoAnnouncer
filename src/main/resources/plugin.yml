@@ -1,0 +1,4 @@
+name: OreoAnnouncer
+version: ${project.version}
+main: me.droreo002.oreoannouncer.OreoAnnouncer
+depend: [PlaceholderAPI]
