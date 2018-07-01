@@ -63,4 +63,12 @@ public class AnnouncerManager {
         announcementMap.clear();
         loadAll();
     }
+
+    public void remove(String name) {
+        announcementMap.remove(name.toLowerCase());
+    }
+
+    public Map<String, Announcement> getAnnouncementMap() {
+        return announcementMap;
+    }
 }

@@ -7,6 +7,7 @@ import me.droreo002.oreoannouncer.manager.DataFile;
 import net.minecraft.server.v1_12_R1.ChatMessageType;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import net.minecraft.server.v1_12_R1.PacketPlayOutChat;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
@@ -29,9 +30,12 @@ public class Announcement {
     private Sound customSound;
     private float soundVolume;
     private float soundPitch;
+    private boolean enabled;
+    private boolean useCenteredMessage;
 
     public Announcement(String name) {
         DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name.toLowerCase());
+        data.setup(name.toLowerCase());
         this.json = data.getString("Data.json");
         this.useJson = data.getBoolean("Data.useJson");
         this.plainText = data.getString("Data.plainText");
@@ -41,7 +45,7 @@ public class Announcement {
         this.title_fade_in = data.getInt("Data.title.title_fade_in");
         this.title_fade_out = data.getInt("Data.title.title_fade_out");
         this.needPermissionToSee = data.getBoolean("Data.needPermissionToSee");
-        this.name = name;
+        this.name = name.toLowerCase();
         this.useTitle = data.getBoolean("Data.useTitle");
         this.useCustomSound = data.getBoolean("Data.sound.useCustomSound");
         this.customSound = Sound.valueOf(data.getString("Data.sound.sound"));
@@ -58,6 +62,9 @@ public class Announcement {
     }
 
     public void send(Player player) {
+        if (!isEnabled()) {
+            return;
+        }
         if (needPermissionToSee) {
             if (!player.hasPermission("oreoannounce.see." + name)) {
                 return;
@@ -74,10 +81,24 @@ public class Announcement {
                 player.sendTitle(title, title_message, title_fade_in, title_time, title_fade_out);
             }
 
+            // Send sound
+            if (useCustomSound) {
+                player.playSound(player.getLocation(), customSound, soundVolume, soundVolume);
+            } else {
+                OreoAnnouncer main = OreoAnnouncer.getInstance();
+                Sound sound = Sound.valueOf(main.getConfigManager().getConfig().getString("Settings.sound"));
+                float volume = (float) main.getConfigManager().getConfig().getInt("Settings.sound-volume");
+                float pitch = (float) main.getConfigManager().getConfig().getInt("Settings.sound-pitch");
+                player.playSound(player.getLocation(), sound, volume, pitch);
+            }
             return;
         }
         try {
             // Send text
+            if (PlaceholderAPI.containsPlaceholders(json)) {
+                json = PlaceholderAPI.setPlaceholders(player, json);
+            }
+
             final IChatBaseComponent icbc = IChatBaseComponent.ChatSerializer.a(ChatColor.translateAlternateColorCodes('&', json));
             final PacketPlayOutChat chat = new PacketPlayOutChat(icbc, ChatMessageType.CHAT);
             ((CraftPlayer)player).getHandle().playerConnection.sendPacket(chat);
@@ -89,14 +110,18 @@ public class Announcement {
 
             // Send sound
             if (useCustomSound) {
-
+                player.playSound(player.getLocation(), customSound, soundVolume, soundVolume);
             } else {
-
+                OreoAnnouncer main = OreoAnnouncer.getInstance();
+                Sound sound = Sound.valueOf(main.getConfigManager().getConfig().getString("Settings.sound"));
+                float volume = (float) main.getConfigManager().getConfig().getInt("Settings.sound-volume");
+                float pitch = (float) main.getConfigManager().getConfig().getInt("Settings.sound-pitch");
+                player.playSound(player.getLocation(), sound, volume, pitch);
             }
         }
         catch (Exception e) {
             // Ignore
-            e.getMessage();
+            Bukkit.getLogger().warning("Cannot send title message with the name of : " + name + ", please check the json data!");
             e.printStackTrace();
         }
     }
@@ -151,5 +176,20 @@ public class Announcement {
 
     public Sound getCustomSound() {
         return customSound;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public boolean isUseCenteredMessage() {
+        return useCenteredMessage;
+    }
+
+    private void save() {
+        DataFile.remove(name);
+        DataFile file = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        file.save();
+        OreoAnnouncer.getInstance().getAnnouncerManager().reload(name);
     }
 }

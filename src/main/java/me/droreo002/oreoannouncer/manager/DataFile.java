@@ -2,6 +2,7 @@ package me.droreo002.oreoannouncer.manager;
 
 import me.droreo002.oreoannouncer.OreoAnnouncer;
 import org.bukkit.Sound;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import javax.xml.crypto.Data;
@@ -60,22 +61,114 @@ public class DataFile extends YamlConfiguration {
         }
     }
 
+    public void setupFromOld(String name) {
+        FileConfiguration con = OreoAnnouncer.getInstance().getConfigManager().getConfig();
+        if (!contains("Data.name")) {
+            set("Data.name", name);
+        }
+        if (!contains("Data.useJson")) {
+            set("Data.useJson", true);
+        }
+        if (!contains("Data.plainText")) {
+            set("Data.plainText", "This is a text message!");
+        }
+        if (!contains("Data.json")) {
+            set("Data.json", con.getString("Announcement." + name + ".message"));
+        }
+        if (!contains("Data.useTitle")) {
+            set("Data.useTitle", con.getBoolean("Announcement." + name + ".title.use-title"));
+        }
+        if (!contains("Data.title.title_message")) {
+            set("Data.title.title_message", con.getString("Announcement." + name + ".title.title-text"));
+        }
+        if (!contains("Data.title.title_sub")) {
+            set("Data.title.title_sub", con.getString("Announcement." + name + ".title.title-bottom-text"));
+        }
+        if (!contains("Data.title.title_fade_in")) {
+            set("Data.title.title_fade_in", con.getString("Announcement." + name + ".title.title-fade-in"));
+        }
+        if (!contains("Data.title.title_fade_out")) {
+            set("Data.title.title_fade_out", con.getString("Announcement." + name + ".title.title-fade-out"));
+        }
+        if (!contains("Data.title.title_stay")) {
+            set("Data.title.title_stay", con.getString("Announcement." + name + ".title.title-stay"));
+        }
+        if (!contains("Data.needPermissionToSee")) {
+            set("Data.needPermissionToSee", con.getBoolean("Announcement." + name + ".needPermissionToSee"));
+        }
+        if (!contains("Data.sound.useCustomSound")) {
+            set("Data.sound.useCustomSound", con.getBoolean("Announcement." + name + ".useCustomSound"));
+        }
+        if (!contains("Data.sound.sound")) {
+            set("Data.sound.sound", con.getBoolean("Announcement." + name + ".sound.type"));
+        }
+        if (!contains("Data.sound.soundVolume")) {
+            set("Data.sound.soundVolume", con.getBoolean("Announcement." + name + ".sound.volume"));
+        }
+        if (!contains("Data.sound.soundPitch")) {
+            set("Data.sound.soundPitch", con.getBoolean("Announcement." + name + ".sound.pitch"));
+        }
+        if (!contains("Data.useCenteredMessage")) {
+            set("Data.useCenteredMessage", false);
+        }
+        if (!contains("Data.isEnabled")) {
+            set("Data.isEnabled", true);
+        }
+        save();
+    }
+
     public void setup(String name) {
-        set("Data.name", name);
-        set("Data.useJson", true);
-        set("Data.plainText", "This is a text message!");
-        set("Data.json", "{\"text\":\"This is a test message!\",\"color\":\"gray\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"This is a test message!\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"Click me!\"}}");
-        set("Data.useTitle", false);
-        set("Data.title.title_message", "&7[ &cTest Title &7]");
-        set("Data.title.title_sub", "&fThis is a sub title!");
-        set("Data.title.title_fade_in", 20);
-        set("Data.title.title_fade_out", 20);
-        set("Data.title.title_stay", 40);
-        set("Data.needPermissionToSee", false);
-        set("Data.sound.useCustomSound", false);
-        set("Data.sound.sound", Sound.BLOCK_NOTE_PLING.toString());
-        set("Data.sound.soundVolume", 50f);
-        set("Data.sound.soundPitch", 0f);
+        if (!contains("Data.name")) {
+            set("Data.name", name);
+        }
+        if (!contains("Data.useJson")) {
+            set("Data.useJson", true);
+        }
+        if (!contains("Data.plainText")) {
+            set("Data.plainText", "This is a text message!");
+        }
+        if (!contains("Data.json")) {
+            set("Data.json", "{\"text\":\"This is a test message!\",\"color\":\"gray\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"This is a test message!\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"Click me!\"}}");
+        }
+        if (!contains("Data.useTitle")) {
+            set("Data.useTitle", false);
+        }
+        if (!contains("Data.title.title_message")) {
+            set("Data.title.title_message", "&7[ &cTest Title &7]");
+        }
+        if (!contains("Data.title.title_sub")) {
+            set("Data.title.title_sub", "&fThis is a sub title!");
+        }
+        if (!contains("Data.title.title_fade_in")) {
+            set("Data.title.title_fade_in", 20);
+        }
+        if (!contains("Data.title.title_fade_out")) {
+            set("Data.title.title_fade_out", 20);
+        }
+        if (!contains("Data.title.title_stay")) {
+            set("Data.title.title_stay", 40);
+        }
+        if (!contains("Data.needPermissionToSee")) {
+            set("Data.needPermissionToSee", false);
+        }
+        if (!contains("Data.sound.useCustomSound")) {
+            set("Data.sound.useCustomSound", false);
+        }
+        if (!contains("Data.sound.sound")) {
+            set("Data.sound.sound", Sound.BLOCK_NOTE_PLING.toString());
+        }
+        if (!contains("Data.sound.soundVolume")) {
+            set("Data.sound.soundVolume", 50f);
+        }
+        if (!contains("Data.sound.soundPitch")) {
+            set("Data.sound.soundPitch", 0f);
+        }
+        if (!contains("Data.useCenteredMessage")) {
+            set("Data.useCenteredMessage", false);
+        }
+        if (!contains("Data.isEnabled")) {
+            set("Data.isEnabled", true);
+        }
         save();
     }
 }
