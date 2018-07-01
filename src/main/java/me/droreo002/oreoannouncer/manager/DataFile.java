@@ -1,6 +1,7 @@
 package me.droreo002.oreoannouncer.manager;
 
 import me.droreo002.oreoannouncer.OreoAnnouncer;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -61,6 +62,10 @@ public class DataFile extends YamlConfiguration {
         }
     }
 
+    public File getFile() {
+        return file;
+    }
+
     public void setupFromOld(String name) {
         FileConfiguration con = OreoAnnouncer.getInstance().getConfigManager().getConfig();
         if (!contains("Data.name")) {
@@ -100,13 +105,13 @@ public class DataFile extends YamlConfiguration {
             set("Data.sound.useCustomSound", con.getBoolean("Announcement." + name + ".useCustomSound"));
         }
         if (!contains("Data.sound.sound")) {
-            set("Data.sound.sound", con.getBoolean("Announcement." + name + ".sound.type"));
+            set("Data.sound.sound", con.getString("Announcement." + name + ".sound.type"));
         }
         if (!contains("Data.sound.soundVolume")) {
-            set("Data.sound.soundVolume", con.getBoolean("Announcement." + name + ".sound.volume"));
+            set("Data.sound.soundVolume", con.getInt("Announcement." + name + ".sound.volume"));
         }
         if (!contains("Data.sound.soundPitch")) {
-            set("Data.sound.soundPitch", con.getBoolean("Announcement." + name + ".sound.pitch"));
+            set("Data.sound.soundPitch", con.getInt("Announcement." + name + ".sound.pitch"));
         }
         if (!contains("Data.useCenteredMessage")) {
             set("Data.useCenteredMessage", false);
@@ -168,6 +173,19 @@ public class DataFile extends YamlConfiguration {
         }
         if (!contains("Data.isEnabled")) {
             set("Data.isEnabled", true);
+        }
+        save();
+    }
+
+    // Update things
+    public void setupUpdate() {
+        if (!contains("Data.useTotemAnimation")) {
+            set("Data.useTotemAnimation", false);
+        }
+        if (!contains("Data.guiSetting")) {
+            set("Data.guiSetting.useHeadIcon", false);
+            set("Data.guiSetting.material", Material.BOOK.toString());
+            set("Data.guiSetting.headIcon", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmFkYzA0OGE3Y2U3OGY3ZGFkNzJhMDdkYTI3ZDg1YzA5MTY4ODFlNTUyMmVlZWQxZTNkYWYyMTdhMzhjMWEifX19\\");
         }
         save();
     }

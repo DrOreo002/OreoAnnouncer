@@ -4,11 +4,10 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderHook;
 import me.droreo002.oreoannouncer.OreoAnnouncer;
 import me.droreo002.oreoannouncer.manager.DataFile;
-import net.minecraft.server.v1_12_R1.ChatMessageType;
-import net.minecraft.server.v1_12_R1.IChatBaseComponent;
-import net.minecraft.server.v1_12_R1.PacketPlayOutChat;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -32,10 +31,14 @@ public class Announcement {
     private float soundPitch;
     private boolean enabled;
     private boolean useCenteredMessage;
+    private boolean useTotemAnimation;
+    private boolean useHeadIcon;
+    private Material icon;
+    private String headIcon;
 
     public Announcement(String name) {
         DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name.toLowerCase());
-        data.setup(name.toLowerCase());
+        data.setupUpdate(); // For update
         this.json = data.getString("Data.json");
         this.useJson = data.getBoolean("Data.useJson");
         this.plainText = data.getString("Data.plainText");
@@ -51,6 +54,17 @@ public class Announcement {
         this.customSound = Sound.valueOf(data.getString("Data.sound.sound"));
         this.soundPitch = (float) data.getInt("Data.sound.soundPitch");
         this.soundVolume = (float) data.getInt("Data.sound.soundVolume");
+        this.enabled = data.getBoolean("Data.isEnabled");
+        this.useCenteredMessage = data.getBoolean("Data.useCenteredMessage");
+        this.useTotemAnimation = data.getBoolean("Data.useTotemAnimation");
+        this.useHeadIcon = data.getBoolean("Data.guiSetting.useHeadIcon");
+        try {
+            this.icon = Material.valueOf(data.getString("Data.guiSetting.material"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error on getting the material " + data.getString("Data.guiSetting.material"));
+        }
+        this.headIcon = data.getString("Data.guiSetting.headIcon");
     }
 
     public float getSoundVolume() {
@@ -91,6 +105,11 @@ public class Announcement {
                 float pitch = (float) main.getConfigManager().getConfig().getInt("Settings.sound-pitch");
                 player.playSound(player.getLocation(), sound, volume, pitch);
             }
+            if (useTotemAnimation) {
+                EntityPlayer ep = ((CraftPlayer)player).getHandle();
+                PacketPlayOutEntityStatus status = new PacketPlayOutEntityStatus(ep, (byte) 35);
+                ep.playerConnection.sendPacket(status);
+            }
             return;
         }
         try {
@@ -117,6 +136,11 @@ public class Announcement {
                 float volume = (float) main.getConfigManager().getConfig().getInt("Settings.sound-volume");
                 float pitch = (float) main.getConfigManager().getConfig().getInt("Settings.sound-pitch");
                 player.playSound(player.getLocation(), sound, volume, pitch);
+            }
+            if (useTotemAnimation) {
+                EntityPlayer ep = ((CraftPlayer)player).getHandle();
+                PacketPlayOutEntityStatus status = new PacketPlayOutEntityStatus(ep, (byte) 35);
+                ep.playerConnection.sendPacket(status);
             }
         }
         catch (Exception e) {
@@ -184,6 +208,57 @@ public class Announcement {
 
     public boolean isUseCenteredMessage() {
         return useCenteredMessage;
+    }
+
+    public boolean isUseTotemAnimation() {
+        return useTotemAnimation;
+    }
+
+    public boolean isUseHeadIcon() {
+        return useHeadIcon;
+    }
+
+    public Material getIcon() {
+        return icon;
+    }
+
+    public String getHeadIcon() {
+        return headIcon;
+    }
+
+    public void setUseTotemAnimation(boolean bol) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.useTotemAnimation", bol);
+        data.save();
+        save();
+    }
+
+    public void setUseCenteredMessage(boolean bol) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.useCenteredMessage", bol);
+        data.save();
+        save();
+    }
+
+    public void setUseTitle(boolean bol) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.title.useTitle", bol);
+        data.save();
+        save();
+    }
+
+    public void setUseCustomSound(boolean bol) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.sound.useCustomSound", bol);
+        data.save();
+        save();
+    }
+
+    public void setEnabled(boolean bol) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.isEnabled", bol);
+        data.save();
+        save();
     }
 
     private void save() {
