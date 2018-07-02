@@ -1,6 +1,5 @@
 package me.droreo002.oreoannouncer;
 
-import com.gamerbah.inventorytoolkit.InventoryClickListener;
 import me.droreo002.oreoannouncer.command.MainCommand;
 import me.droreo002.oreoannouncer.inventory.api.InventoryListener;
 import me.droreo002.oreoannouncer.manager.AnnouncerManager;

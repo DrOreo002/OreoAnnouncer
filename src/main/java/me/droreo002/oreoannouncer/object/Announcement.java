@@ -4,13 +4,18 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderHook;
 import me.droreo002.oreoannouncer.OreoAnnouncer;
 import me.droreo002.oreoannouncer.manager.DataFile;
+import me.droreo002.oreoannouncer.utils.CenterSender;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Announcement {
 
@@ -35,13 +40,22 @@ public class Announcement {
     private boolean useHeadIcon;
     private Material icon;
     private String headIcon;
+    private boolean isList;
+    private List<String> message;
 
     public Announcement(String name) {
         DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name.toLowerCase());
         data.setupUpdate(); // For update
         this.json = data.getString("Data.json");
         this.useJson = data.getBoolean("Data.useJson");
-        this.plainText = data.getString("Data.plainText");
+        if (data.isList("Data.plainText")) {
+            this.isList = true;
+            message = data.getStringList("Data.plainText");
+        } else {
+            this.isList = false;
+            this.plainText = data.getString("Data.plainText");
+            message = new ArrayList<>();
+        }
         this.title_message = data.getString("Data.title.title_sub");
         this.title = data.getString("Data.title.title_message");
         this.title_time = data.getInt("Data.title.title_stay");
@@ -85,21 +99,41 @@ public class Announcement {
             }
         }
         if (!useJson) {
-            if (PlaceholderAPI.containsPlaceholders(plainText)) {
-                plainText = PlaceholderAPI.setPlaceholders(player, plainText);
+            List<String> result = new ArrayList<>();
+            if (isList) {
+                for (String s : message) {
+                    if (PlaceholderAPI.containsPlaceholders(s)) {
+                        s = PlaceholderAPI.setPlaceholders(player, s);
+                    }
+                    result.add(s);
+                }
+            } else {
+                if (PlaceholderAPI.containsPlaceholders(plainText)) {
+                    plainText = PlaceholderAPI.setPlaceholders(player, plainText);
+                }
             }
-            player.sendMessage(OreoAnnouncer.getInstance().color(plainText));
+            if (useCenteredMessage) {
+                if (isList) {
+                    for (String s : result) {
+                        CenterSender.send(player, OreoAnnouncer.getInstance().color(s));
+                    }
+                } else {
+                    CenterSender.send(player, OreoAnnouncer.getInstance().color(plainText));
+                }
+            } else {
+                player.sendMessage(OreoAnnouncer.getInstance().color(plainText));
+            }
 
             // Send title
+            OreoAnnouncer main = OreoAnnouncer.getInstance();
             if (useTitle) {
-                player.sendTitle(title, title_message, title_fade_in, title_time, title_fade_out);
+                player.sendTitle(main.color(title), main.color(title_message), title_fade_in, title_time, title_fade_out);
             }
 
             // Send sound
             if (useCustomSound) {
                 player.playSound(player.getLocation(), customSound, soundVolume, soundVolume);
             } else {
-                OreoAnnouncer main = OreoAnnouncer.getInstance();
                 Sound sound = Sound.valueOf(main.getConfigManager().getConfig().getString("Settings.sound"));
                 float volume = (float) main.getConfigManager().getConfig().getInt("Settings.sound-volume");
                 float pitch = (float) main.getConfigManager().getConfig().getInt("Settings.sound-pitch");
@@ -114,6 +148,9 @@ public class Announcement {
         }
         try {
             // Send text
+            if (useCenteredMessage) {
+                throw new IllegalStateException("useCenteredMessage cannot be enabled if announcer type is JSON!");
+            }
             if (PlaceholderAPI.containsPlaceholders(json)) {
                 json = PlaceholderAPI.setPlaceholders(player, json);
             }
@@ -123,15 +160,15 @@ public class Announcement {
             ((CraftPlayer)player).getHandle().playerConnection.sendPacket(chat);
 
             // Send title
+            OreoAnnouncer main = OreoAnnouncer.getInstance();
             if (useTitle) {
-                player.sendTitle(title, title_message, title_fade_in, title_time, title_fade_out);
+                player.sendTitle(main.color(title), main.color(title_message), title_fade_in, title_time, title_fade_out);
             }
 
             // Send sound
             if (useCustomSound) {
                 player.playSound(player.getLocation(), customSound, soundVolume, soundVolume);
             } else {
-                OreoAnnouncer main = OreoAnnouncer.getInstance();
                 Sound sound = Sound.valueOf(main.getConfigManager().getConfig().getString("Settings.sound"));
                 float volume = (float) main.getConfigManager().getConfig().getInt("Settings.sound-volume");
                 float pitch = (float) main.getConfigManager().getConfig().getInt("Settings.sound-pitch");
@@ -242,7 +279,7 @@ public class Announcement {
 
     public void setUseTitle(boolean bol) {
         DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
-        data.set("Data.title.useTitle", bol);
+        data.set("Data.useTitle", bol);
         data.save();
         save();
     }

@@ -1,7 +1,7 @@
 name: OreoAnnouncer
 version: 2.0
 main: me.droreo002.oreoannouncer.OreoAnnouncer
-depend: [PlaceholderAPI, InventoryToolkit]
+depend: [PlaceholderAPI, Pagination]
 
 commands:
   oreoannouncer:

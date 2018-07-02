@@ -1,10 +1,11 @@
 package me.droreo002.oreoannouncer.inventory;
 
-import com.gamerbah.inventorytoolkit.ItemBuilder;
 import me.droreo002.oreoannouncer.OreoAnnouncer;
 import me.droreo002.oreoannouncer.inventory.api.CustomInventory;
 import me.droreo002.oreoannouncer.object.Announcement;
 import me.droreo002.oreoannouncer.utils.Utils;
+import me.droreo002.pagination.CustomItem;
+import me.droreo002.pagination.outside_api.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -80,16 +81,21 @@ public class EditorInventory extends CustomInventory {
             announcement.setUseCustomSound(false);
             return;
         }
-        if (name.equals(main.color("&7[ &6useCustomSound &7| &afalse &7]"))) {
+        if (name.equals(main.color("&7[ &6useCustomSound &7| &cfalse &7]"))) {
             closeInventory(player);
             player.sendMessage(main.getPrefix() + "Enabled");
-            announcement.setEnabled(true);
+            announcement.setUseCustomSound(true);
             return;
         }
         if (name.equals(main.color("&7[ &6isEnabled &7| &atrue &7]"))) {
             closeInventory(player);
             player.sendMessage(main.getPrefix() + "Disabled");
             announcement.setEnabled(false);
+        }
+        if (name.equals(main.color("&7[ &6isEnabled &7| &cfalse &7]"))) {
+            closeInventory(player);
+            player.sendMessage(main.getPrefix() + "Enabled");
+            announcement.setEnabled(true);
         }
     }
 
@@ -107,11 +113,11 @@ public class EditorInventory extends CustomInventory {
     public Inventory getInventory() {
         Inventory inventory = Bukkit.createInventory(this, 27, main.color("&7[ &cSetting Inventory &7]"));
         for (int i = 0; i < inventory.getSize(); i++) {
-            inventory.setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE).name(" ").durability(7));
+            inventory.setItem(i, new CustomItem(Material.STAINED_GLASS_PANE, " ", 7));
         }
-        inventory.setItem(4, new ItemBuilder(Material.STAINED_GLASS_PANE).name(" ").durability(3));
-        inventory.setItem(13, new ItemBuilder(Material.STAINED_GLASS_PANE).name(" ").durability(3));
-        inventory.setItem(22, new ItemBuilder(Material.STAINED_GLASS_PANE).name(" ").durability(3));
+        inventory.setItem(4, new CustomItem(Material.STAINED_GLASS_PANE, " ", 5));
+        inventory.setItem(13, new CustomItem(Material.STAINED_GLASS_PANE, " ", 5));
+        inventory.setItem(22, new CustomItem(Material.STAINED_GLASS_PANE, " ", 5));
 
         ItemStack toggle;
         ItemStack toggle_sound;
@@ -119,10 +125,10 @@ public class EditorInventory extends CustomInventory {
         ItemStack toggle_title;
         ItemStack toggle_centered_text;
         if (announcement.isUseTotemAnimation()) {
-            toggle_totem = new ItemBuilder(Material.TOTEM)
-                    .name(main.color("&7[ &6useTotem &7| &atrue &7]"))
-                    .lore(main.color("&r"))
-                    .lore(main.color("&7Click to &cDisable &7totem animation!"));
+            toggle_totem = new CustomItem(Material.TOTEM, "&7[ &6useTotem &7| &atrue &7]", new String[] {
+                    "&r",
+                    "&7Click to &cDisable &7totem animation!"
+            });
         } else {
             toggle_totem = new ItemBuilder(Material.TOTEM)
                     .name(main.color("&7[ &6useTotem &7| &cfalse &7]"))
