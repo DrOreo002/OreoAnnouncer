@@ -89,12 +89,14 @@ public class Announcement {
         return soundPitch;
     }
 
-    public void send(Player player) {
-        if (!isEnabled()) {
-            return;
+    public void send(Player player, boolean forceSend) {
+        if (!forceSend) {
+            if (!isEnabled()) {
+                return;
+            }
         }
         if (needPermissionToSee) {
-            if (!player.hasPermission("oreoannounce.see." + name)) {
+            if (!player.hasPermission("oan.see." + name)) {
                 return;
             }
         }
@@ -263,11 +265,115 @@ public class Announcement {
         return headIcon;
     }
 
+    public void setMessage(String msg) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.plainText", msg);
+        data.save();
+        save();
+    }
+
+    public void setTitle(String msg) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.title.title_message", msg);
+        data.save();
+        save();
+    }
+
+    public void setSubTitle(String msg) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.title.title_sub", msg);
+        data.save();
+        save();
+    }
+
+    public void setUseJson(boolean bol) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.useJson", bol);
+        data.save();
+        save();
+    }
+
+    public void setTitleFadeIn(int number) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.title.title_fade_in", number);
+        data.save();
+        save();
+    }
+
+    public void setTitleFadeOut(int number) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.title.title_fade_out", number);
+        data.save();
+        save();
+    }
+
+    public void setTitleStay(int number) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.title.title_stay", number);
+        data.save();
+        save();
+    }
+
+    public void setUseHeadIcon(boolean bol) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.guiSetting.useHeadIcon", bol);
+        data.save();
+        save();
+    }
+
     public void setUseTotemAnimation(boolean bol) {
         DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
         data.set("Data.useTotemAnimation", bol);
         data.save();
         save();
+    }
+
+    public void setHeadTexture(String s) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.guiSetting.headIcon", s);
+        data.save();
+        save();
+    }
+
+    public void setMaterial(String s) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.guiSetting.material", s);
+        data.save();
+        save();
+    }
+
+    public void setCustomSound(String s) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.sound.sound", s);
+        data.save();
+        save();
+    }
+
+    public void setCustomSoundVolume(int s) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.sound.soundVolume", s);
+        data.save();
+        save();
+    }
+
+    public void setCustomSoundPitch(int s) {
+        DataFile data = DataFile.getConfig(OreoAnnouncer.getInstance(), name);
+        data.set("Data.sound.soundPitch", s);
+        data.save();
+        save();
+    }
+
+    public void playSound(Player player) {
+        Announcement an = OreoAnnouncer.getInstance().getAnnouncerManager().getAnnoucement(name);
+        if (an == null) return;
+        player.playSound(player.getLocation(), an.getCustomSound(), an.getSoundVolume(), an.getSoundPitch());
+    }
+
+    public void sendTitle(Player player) {
+        OreoAnnouncer main = OreoAnnouncer.getInstance();
+        Announcement an = main.getAnnouncerManager().getAnnoucement(name);
+        if (an == null) return;
+        player.sendTitle(main.color(an.getTitle()), main.color(an.getTitle_message()), an.getTitle_fade_in(), an.getTitle_time(), an.getTitle_fade_out());
     }
 
     public void setUseCenteredMessage(boolean bol) {

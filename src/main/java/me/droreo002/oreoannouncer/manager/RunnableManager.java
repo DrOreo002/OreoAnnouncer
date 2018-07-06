@@ -23,7 +23,7 @@ public class RunnableManager implements Runnable {
             List<Announcement> all = new ArrayList<>(main.getAnnouncerManager().getAnnouncementMap().values());
             Announcement an = all.get(Utils.random(0, all.size() - 1));
             for (Player player : Bukkit.getOnlinePlayers()) {
-                an.send(player);
+                an.send(player, false);
             }
         } else {
             System.out.println("Announcement is empty!");

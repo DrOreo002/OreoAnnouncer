@@ -1,6 +1,7 @@
 package me.droreo002.oreoannouncer.command;
 
 import me.droreo002.oreoannouncer.OreoAnnouncer;
+import me.droreo002.oreoannouncer.command.edit.EditorCommandManager;
 import me.droreo002.oreoannouncer.inventory.AnnouncementList;
 import me.droreo002.oreoannouncer.inventory.EditorInventory;
 import me.droreo002.oreoannouncer.manager.DataFile;
@@ -145,8 +146,30 @@ public class MainCommand implements CommandExecutor {
                             player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 100, 1);
                             return true;
                         }
-                        player.sendMessage(main.getPrefix() + "See the spigot page for more information");
+                        player.sendMessage(main.color("&7&m---------------------------------------"));
+                        player.sendMessage(main.color("&r"));
+                        player.sendMessage(main.color("&7> &f/oan &7| &6Main command"));
+                        player.sendMessage(main.color("&7> &f/oan help &7| &6Shows this command"));
+                        player.sendMessage(main.color("&7> &f/oan stop &7| &6Stop the runnable"));
+                        player.sendMessage(main.color("&7> &f/oan start &7| &6Start the runnable"));
+                        player.sendMessage(main.color("&7> &f/oan create <name> &7| &6Create an Announcement"));
+                        player.sendMessage(main.color("&7> &f/oan delete <name> &7| &6Delete an Announcement"));
+                        player.sendMessage(main.color("&7> &f/oan list &7| &6Show announcement list"));
+                        player.sendMessage(main.color("&7> &f/oan edit <name> &7| &6Edit an announcement (Full edit features use /oan editor command)"));
+                        player.sendMessage(main.color("&7> &f/oan editor <name> <type> &7| &6A full editor for announcement (Not gui)"));
+                        player.sendMessage(main.color("&7> &f/oan editor help &7| &6Shows an help page for editor things"));
+                        player.sendMessage(main.color("&r"));
+                        player.sendMessage(main.color("&7&m---------------------------------------"));
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1.0f, 1.2f);
+                        return true;
+                    case "editor":
+                        if (!player.hasPermission("oan.admin")) {
+                            player.sendMessage(main.getPrefix() + "No permission!");
+                            player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 100, 1);
+                            return true;
+                        }
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1.0f, 1.2f);
+                        player.sendMessage(main.getPrefix() + "Usage : /oan editor <announcement> <type>");
                         return true;
                     default:
                         player.sendMessage(main.getPrefix() + "Unknown command!");
@@ -265,6 +288,50 @@ public class MainCommand implements CommandExecutor {
                     Utils.deleteAnnouncement(name, player);
                     return true;
                 }
+                if (args[0].equalsIgnoreCase("editor")) {
+                    if (!player.hasPermission("oan.admin")) {
+                        player.sendMessage(main.getPrefix() + "No permission!");
+                        player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 100, 1);
+                        return true;
+                    }
+                    if (args[1].equalsIgnoreCase("help")) {
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1.0f, 1.2f);
+                        player.sendMessage(main.color("&7&m---------------------------------------"));
+                        player.sendMessage(main.color("&r"));
+                        player.sendMessage(main.color("&7> &fUSE_TITLE &7| &6Edit the useTitle boolean"));
+                        player.sendMessage(main.color("&7> &fTITLE &7| &6Edit the title message"));
+                        player.sendMessage(main.color("&7> &fTITLE_SUB &7| &6Edit the sub title"));
+                        player.sendMessage(main.color("&7> &fTITLE_FADE_IN &7| &6Edit the title fade in"));
+                        player.sendMessage(main.color("&7> &fTITLE_FADE_OUT &7| &6Edit the title fade out"));
+                        player.sendMessage(main.color("&7> &fTITLE_STAY &7| &6Edit the title stay"));
+                        player.sendMessage(main.color("&r"));
+                        player.sendMessage(main.color("&7> &fMESSAGE &7| &6Edit the message"));
+                        player.sendMessage(main.color("&7> &fUSE_JSON &7| &6Edit the useJson boolean"));
+                        player.sendMessage(main.color("&7> &fMESSAGE_JSON &7| &6Edit the json message"));
+                        player.sendMessage(main.color("&r"));
+                        player.sendMessage(main.color("&7> &fUSE_CUSTOMHEAD &7| &6Edit the useCustomHead boolean"));
+                        player.sendMessage(main.color("&7> &fGUI_TEXTURE &7| &6Edit the gui head texture"));
+                        player.sendMessage(main.color("&7> &fGUI_MATERIAL &7| &6Edit the gui head texture"));
+                        player.sendMessage(main.color("&r"));
+                        player.sendMessage(main.color("&7> &fUSE_CUSTOMSOUND &7| &6Edit the useCustomSound boolean"));
+                        player.sendMessage(main.color("&7> &fCUSTOM_SOUND &7| &6Edit the custom sound type"));
+                        player.sendMessage(main.color("&7> &fCUSTOM_SOUND_VOLUME &7| &6Edit the custom sound volume"));
+                        player.sendMessage(main.color("&7> &fCUSTOM_SOUND_PITCH &7| &6Edit the custom sound pitch"));
+                        player.sendMessage(main.color("&7&m---------------------------------------"));
+                        player.sendMessage(main.color("&r"));
+                        player.sendMessage(main.getPrefix() + main.color("You can run the command for more information. This command is intended for editing some text, or important stuff. To edit the basic things you can use &6/oan edit <name> &fcommand or edit it directly on the data file"));
+                        return true;
+                    } else {
+                        Announcement an = main.getAnnouncerManager().getAnnoucement(args[1]);
+                        if (an == null) {
+                            player.sendMessage(main.getPrefix() + "Cannot find that announcement!");
+                            player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 100, 1);
+                            return true;
+                        } else {
+                            player.sendMessage(main.getPrefix() + "Usage : /oan editor <announcement | help> <type>");
+                        }
+                    }
+                }
                 if (args[0].equalsIgnoreCase("save")) {
                     if (!player.hasPermission("oan.admin")) {
                         player.sendMessage(main.getPrefix() + "No permission!");
@@ -302,10 +369,17 @@ public class MainCommand implements CommandExecutor {
                     }
                     if (args[2].equalsIgnoreCase("all")) {
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1.0f, 1.2f);
-                        for (Player online : Bukkit.getOnlinePlayers()) {
-                            an.send(online);
+                        if (main.getConfigManager().getConfig().getBoolean("Settings.enableForceSendInCommandAndGui")) {
+                            for (Player online : Bukkit.getOnlinePlayers()) {
+                                an.send(online, true);
+                            }
+                            player.sendMessage(main.getPrefix() + "The announcement has been force sent to all online players!");
+                        } else {
+                            for (Player online : Bukkit.getOnlinePlayers()) {
+                                an.send(online, false);
+                            }
+                            player.sendMessage(main.getPrefix() + "The announcement has been sent to all online player. Btw, for sent is disabled in config, so announcement will not be sent if its disabled.");
                         }
-                        player.sendMessage(main.getPrefix() + "Sended to all online players!");
                         return true;
                     }
                     Player target = Bukkit.getPlayerExact(args[2]);
@@ -314,9 +388,32 @@ public class MainCommand implements CommandExecutor {
                         player.sendMessage(main.getPrefix() + "That player is not ONLINE!");
                         return true;
                     }
-                    an.send(target);
+                    if (main.getConfigManager().getConfig().getBoolean("Settings.enableForceSendInCommandAndGui")) {
+                        an.send(target, true);
+                        player.sendMessage(main.getPrefix() + "The announcement has been force sent to " + target.getName());
+                    } else {
+                        an.send(target, false);
+                        player.sendMessage(main.getPrefix() + "The announcement has been sent to " + target.getName() + ".Btw, for sent is disabled in config, so announcement will not be sent if its disabled.");
+                    }
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1.0f, 1.2f);
-                    player.sendMessage(main.getPrefix() + "Sended to " + target.getName());
+                    return true;
+                }
+            }
+            if (args.length >= 3) {
+                if (args[0].equalsIgnoreCase("editor")) {
+                    if (!player.hasPermission("oan.admin")) {
+                        player.sendMessage(main.getPrefix() + "No permission!");
+                        player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 100, 1);
+                        return true;
+                    }
+                    Announcement an = main.getAnnouncerManager().getAnnoucement(args[1]);
+                    if (an == null) {
+                        player.sendMessage(main.getPrefix() + "Cannot find that announcement!");
+                        player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 100, 1);
+                        return true;
+                    }
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HARP, 1.0f, 1.2f);
+                    new EditorCommandManager(main, an).onCommand(commandSender, command, s, args);
                     return true;
                 }
             }

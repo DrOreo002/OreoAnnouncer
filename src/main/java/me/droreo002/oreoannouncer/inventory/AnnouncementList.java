@@ -19,7 +19,6 @@ public class AnnouncementList extends PaginatedInventory {
     private OreoAnnouncer main;
     private Player player;
 
-    // TODO : Use PaginationOreo for the api
     public AnnouncementList(OreoAnnouncer main, Player player) {
         super(main.color("&7[ &cAnnouncement List &7]"), 36, Pagination.getInstance());
         this.main = main;
@@ -38,10 +37,17 @@ public class AnnouncementList extends PaginatedInventory {
                 .setAction(inventoryClickEvent -> {
                     if (inventoryClickEvent.getClick().equals(ClickType.LEFT)) {
                         closeInventory(player);
-                        for (Player online : Bukkit.getOnlinePlayers()) {
-                            an.send(online);
+                        if (main.getConfigManager().getConfig().getBoolean("Settings.enableForceSendInCommandAndGui")) {
+                            for (Player online : Bukkit.getOnlinePlayers()) {
+                                an.send(online, true);
+                            }
+                            player.sendMessage(main.getPrefix() + "The announcement has been force sent to all online player");
+                        } else {
+                            for (Player online : Bukkit.getOnlinePlayers()) {
+                                an.send(online, false);
+                            }
+                            player.sendMessage(main.getPrefix() + "The announcement has been sent to all online player. Btw, for sent is disabled in config, so announcement will not be sent if its disabled.");
                         }
-                        player.sendMessage(main.getPrefix() + "Sended to all online player");
                         return;
                     }
                     if (inventoryClickEvent.getClick().equals(ClickType.RIGHT)) {
@@ -55,8 +61,16 @@ public class AnnouncementList extends PaginatedInventory {
                     .setAction(inventoryClickEvent -> {
                         if (inventoryClickEvent.getClick().equals(ClickType.LEFT)) {
                             closeInventory(player);
-                            for (Player online : Bukkit.getOnlinePlayers()) {
-                                an.send(online);
+                            if (main.getConfigManager().getConfig().getBoolean("Settings.enableForceSendInCommandAndGui")) {
+                                for (Player online : Bukkit.getOnlinePlayers()) {
+                                    an.send(online, true);
+                                }
+                                player.sendMessage(main.getPrefix() + "The announcement has been force sent to all online player");
+                            } else {
+                                for (Player online : Bukkit.getOnlinePlayers()) {
+                                    an.send(online, false);
+                                }
+                                player.sendMessage(main.getPrefix() + "The announcement has been sent to all online player. Btw, for sent is disabled in config, so announcement will not be sent if its disabled.");
                             }
                             player.sendMessage(main.getPrefix() + "Sended to all online player");
                             return;
@@ -73,8 +87,16 @@ public class AnnouncementList extends PaginatedInventory {
                             .setAction(inventoryClickEvent -> {
                                 if (inventoryClickEvent.getClick().equals(ClickType.LEFT)) {
                                     closeInventory(player);
-                                    for (Player online : Bukkit.getOnlinePlayers()) {
-                                        an.send(online);
+                                    if (main.getConfigManager().getConfig().getBoolean("Settings.enableForceSendInCommandAndGui")) {
+                                        for (Player online : Bukkit.getOnlinePlayers()) {
+                                            an.send(online, true);
+                                        }
+                                        player.sendMessage(main.getPrefix() + "The announcement has been force sent to all online player");
+                                    } else {
+                                        for (Player online : Bukkit.getOnlinePlayers()) {
+                                            an.send(online, false);
+                                        }
+                                        player.sendMessage(main.getPrefix() + "The announcement has been sent to all online player. Btw, for sent is disabled in config, so announcement will not be sent if its disabled.");
                                     }
                                     player.sendMessage(main.getPrefix() + "Sended to all online player");
                                     return;

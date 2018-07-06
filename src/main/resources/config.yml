@@ -11,3 +11,8 @@ Settings:
   sound-volume: 50
   # sound pitch
   sound-pitch: 10
+  # Enable force send of announcement, so it will be send to player / all player and it will ignore the isEnabled boolean on
+  # the announcement
+  enableForceSendInCommandAndGui: true
+  # I'm not recommended you to set this to true, because It will send the announcement and ignore if its disabled.
+  enableForceSendInRunnable: false

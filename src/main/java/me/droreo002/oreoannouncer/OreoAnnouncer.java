@@ -1,6 +1,8 @@
 package me.droreo002.oreoannouncer;
 
 import me.droreo002.oreoannouncer.command.MainCommand;
+import me.droreo002.oreoannouncer.command.edit.EditCommand;
+import me.droreo002.oreoannouncer.command.edit.objects.*;
 import me.droreo002.oreoannouncer.inventory.api.InventoryListener;
 import me.droreo002.oreoannouncer.manager.AnnouncerManager;
 import me.droreo002.oreoannouncer.manager.ConfigManager;
@@ -13,6 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OreoAnnouncer extends JavaPlugin {
 
@@ -20,6 +24,7 @@ public class OreoAnnouncer extends JavaPlugin {
     private AnnouncerManager announcerManager;
     private static OreoAnnouncer instance;
     private int announcerID;
+    private final Map<String, EditCommand> commands = new HashMap<>();
 
     // Todo : Continue the recode, its easy anyway
     @Override
@@ -28,6 +33,7 @@ public class OreoAnnouncer extends JavaPlugin {
         // Plugin startup logic
         configManager = ConfigManager.getInstance(this);
         configManager.setup();
+        updateConfig();
         announcerManager = AnnouncerManager.get(this);
         announcerManager.loadAll();
         if (configManager.getConfig().isSet("Announcement")) {
@@ -49,14 +55,41 @@ public class OreoAnnouncer extends JavaPlugin {
 
         // Command registering
         Bukkit.getPluginCommand("oreoannouncer").setExecutor(new MainCommand(this));
+        registerEditCommand();
 
         // Listener registering
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    private void registerEditCommand() {
+        /*
+        Messages
+         */
+        new EditMessageCommand().register();
+        new EditMessageJsonCommand().register();
+        new EditUseJsonCommand().register();
+        /*
+        Titles
+         */
+        new EditUseTitleCommand().register();
+        new EditTitleCommand().register();
+        new EditTitleSubCommand().register();
+        new EditTitleFadeInCommand().register();
+        new EditTitleFadeOutCommand().register();
+        new EditTitleStayCommand().register();
+        /*
+        Gui's
+         */
+        new EditGuiMaterialCommand().register();
+        new EditUseCustomHeadCommand().register();
+        new EditHeadTextureCommand().register();
+        /*
+        Sounds
+         */
+        new EditUseCustomSoundCommand().register();
+        new EditCustomSoundCommand().register();
+        new EditCustomSoundPitch().register();
+        new EditCustomSoundVolume().register();
     }
 
     public String getPrefix() {
@@ -85,5 +118,19 @@ public class OreoAnnouncer extends JavaPlugin {
 
     public int getAnnouncerID() {
         return announcerID;
+    }
+
+    public Map<String, EditCommand> getCommands() {
+        return commands;
+    }
+
+    private void updateConfig() {
+        if (!configManager.getConfig().isSet("Settings.enableForceSendInCommandAndGui")) {
+            configManager.getConfig().set("Settings.enableForceSendInCommandAndGui", true);
+        }
+        if (!configManager.getConfig().isSet("Settings.enableForceSendInRunnable")) {
+            configManager.getConfig().set("Settings.enableForceSendInRunnable", false);
+        }
+        configManager.reloadConfig();
     }
 }
